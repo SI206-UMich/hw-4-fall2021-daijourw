@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import unittest
-
+import random
 # The Customer class
 # The Customer class represents a customer who will order from the stalls.
 class Customer: 
@@ -45,6 +45,7 @@ class Cashier:
 
     # Constructor
     def __init__(self, name, directory =[]):
+        self.custnum = 0
         self.name = name
         self.directory = directory[:] # make a copy of the directory
 
@@ -65,7 +66,19 @@ class Cashier:
 	# The stall processes the order
 	# Function returns cost of the order, using compute_cost method
     def place_order(self, stall, item, quantity):
-        stall.process_order(item, quantity)
+        self.custnum += 1
+        if self.custnum == 10:
+            print("You are the 10th customer!")
+            stall.process_order(item, quantity)
+            i = random.randint(0,100)
+            if i == 5:
+                print("You've wone $10!")
+                Customer.reload_money(10)
+            else:
+                print("Unfortunately, you did not win $10")
+        else:
+            print("Unfortunately you are not the 10th customer.")
+            stall.process_order(item, quantity)
         return stall.compute_cost(quantity) 
     
     # string function.
@@ -201,13 +214,12 @@ class TestAllMethods(unittest.TestCase):
         walletval = self.f1.wallet
 		# case 1: test if a customer doesn't have enough money in their wallet to order
 
-        self.f1.validate_order(self.c1,self.s1,"Burger",100)
+        self.f1.validate_order(self.c1,self.s1,"Burger",40)
         #self.assertEqual(self.f1.wallet, walletval)
-        print(self.f1.wallet)
+        self.assertEqual(self.f1.wallet, walletval)
 
 		# case 2: test if the stall doesn't have enough food left in stock
-        #if cashier doesnt have stall
-        self.f2.validate_order(self.c2,self.s2,"Hot Dog",45)
+        self.f2.validate_order(self.c2,self.s2,"Burger",45)
         self.assertEqual(self.f1.wallet, walletval)
 
 		# case 3: check if the cashier can order item from that stall
@@ -216,7 +228,7 @@ class TestAllMethods(unittest.TestCase):
         # self.f1.validate_order(self.c1,self.s1,"Taco",1)
 
         self.assertFalse(self.f1.validate_order(self.c1,self.s1,"Burger",1))
-        self.assertEqual(self.f1.wallet, walletval-40)
+        self.assertEqual(self.f1.wallet, walletval-10)
         #pass
 
     # Test if a customer can add money to their wallet
@@ -258,11 +270,12 @@ def main():
     #case 3: the customer does not have enough money to pay for the order: 
     cust1.validate_order(cashier_1,stand1,"fries",6)
     cust2.validate_order(cashier_1,stand2,"pop",10)
+    cust3.validate_order(cashier_1,stand1,"fries",6)
     
     #case 4: the customer successfully places an order
     cust1.validate_order(cashier_1,stand1,"fries",5)
-
-    pass
+    cust2.validate_order(cashier_1,stand1,"hot dog",2)
+    cust3.validate_order(cashier_1,stand1, "fries",1)
 
 if __name__ == "__main__":
 	main()
