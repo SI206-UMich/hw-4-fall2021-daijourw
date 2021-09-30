@@ -1,4 +1,4 @@
-
+# -*- coding: utf-8 -*-
 import unittest
 
 # The Customer class
@@ -85,7 +85,7 @@ class Stall:
                 self.inventory[name] = self.inventory[name] - quantity
 
     def has_item(self, food_name, quantity):
-        if self.inventory[food_name] >= quantity:
+        if food_name in self.inventory and self.inventory[food_name] >= quantity:
             return True
         else:
             return False
@@ -97,7 +97,7 @@ class Stall:
             self.inventory[food_name] += quantity
 
     def compute_cost(self, quantity):
-        return cost * quantity
+        return self.cost * quantity
 
     def __str__(self):
         sentence = "Hello, we are {name}. This is the current {inventory}. We charge ${cost} per item. We have ${earnings}".format(name=self.stallname,inventory=self.inventory.keys(),cost=self.cost,earnings=self.earnings)
@@ -219,18 +219,18 @@ class TestAllMethods(unittest.TestCase):
 ### Write main function
 def main():
     #Create different objects 
-    inventory1 = {"fries": 10, "hot dog": 2, "popcorn": 1}
+    inventory1 = {"fries": 10, "hot dog": 5, "popcorn": 1}
     inventory2 = {"nachos": 8, "pop": 10, "water": 6}
 
     cust1 = Customer("Andrew", 50)
-    cust2 = Customer("Bella", 98)
-    cust3 = Customer("Will", 55)
+    cust2 = Customer("Bella", 90)
+    cust3 = Customer("Will", 50)
 
     stand1 = Stall("Stand1",inventory1,15)
     stand2 = Stall("Stand2",inventory2, 8)
 
-    cash1 = Cashier("DJ", [Stand1,Stand2])
-    cash2 = Cashier("Max",[Stand1,Stand2])
+    cashier_1 = Cashier("DJ", [stand1,stand2])
+    cashier_2 = Cashier("Max",[stand1,stand2])
     #Try all cases in the validate_order function
 
     #Below you need to have *each customer instance* try the four cases
@@ -240,12 +240,13 @@ def main():
     cust3.validate_order(cashier_1,stand2,"veggies",3)
     
     #case 2: the casher has the stall, but not enough ordered food or the ordered food item
-    cust1.validate_order(cashier_1,stand1,"fries",5)
+    cust1.validate_order(cashier_1,stand1,"fries",12)
     cust2.validate_order(cashier_1,stand1,"popcorn",8)
-    cust3.validate_order(cashier_2,stand2,"fries",5)
+    cust3.validate_order(cashier_2,stand2,"water",8)
     
     #case 3: the customer does not have enough money to pay for the order: 
     cust1.validate_order(cashier_1,stand1,"fries",6)
+    cust2.validate_order(cashier_1,stand1,)
     
     #case 4: the customer successfully places an order
     cust1.validate_order(cashier_1,stand1,"fries",5)
