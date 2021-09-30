@@ -6,7 +6,7 @@ import unittest
 class Customer: 
     # Constructor
     def __init__(self, name, wallet = 100):
-        self.name = name
+        self.custname = name
         self.wallet = wallet
 
     # Reload some deposit into the customer's wallet.
@@ -28,7 +28,12 @@ class Customer:
     # Submit_order takes a cashier, a stall and an amount as parameters, 
     # it deducts the amount from the customer’s wallet and calls the receive_payment method on the cashier object
     def submit_order(self, cashier, stall, amount): 
-        pass
+        self.cashier = cashier
+        self.stall = stall
+        self.amount = amount
+        self.wallet = self.wallet - self.amount
+        self.recieve_payment(self.stall,self.amount)
+
 
     # The __str__ method prints the customer's information.    
     def __str__(self):
@@ -71,8 +76,26 @@ class Cashier:
 
 ## Complete the Stall class here following the instructions in HW_4_instructions_rubric
 class Stall:
-    
-    pass
+    def __init__(self,name,inventory,cost=7,earnings=0):
+        self.stallname = name
+        self.inventory = inventory
+        self.cost = cost
+        self.earnings = earnings
+    def process_order(self, name, quantity):
+        if name in self.inventory:
+            if self.inventory[name] >= quantity:
+                self.inventory[name] = self.inventory[name] - quantity
+    def has_item(self, food_name, quantity):
+        if self.inventory[food_name] >= quantity:
+            return True
+        else:
+            return False
+    def stock_up(self,food_name,quantity):
+        self.inventory[food_name] += quantity
+    def compute_cost(self, quantity):
+        return cost * quantity
+    def __str__(self):
+        sentence = "Hello, we are {name}. This is the current {inventory}. We charge ${cost} per item. We have ${earnings}".format(name=self.stallname,inventory=self.inventory.keys(),cost=self.cost,earnings=self.earnings)
 
 
 class TestAllMethods(unittest.TestCase):
@@ -147,8 +170,8 @@ class TestAllMethods(unittest.TestCase):
     def test_compute_cost(self):
         #what's wrong with the following statements?
         #can you correct them?
-        self.assertEqual(self.s1.compute_cost(self.s1,5), 51)
-        self.assertEqual(self.s3.compute_cost(self.s3,6), 45)
+        self.assertEqual(self.s1.compute_cost(5), 51)
+        self.assertEqual(self.s3.compute_cost(6), 45)
 
 	# Check that the stall can properly see when it is empty
     def test_has_item(self):
@@ -179,8 +202,20 @@ class TestAllMethods(unittest.TestCase):
 ### Write main function
 def main():
     #Create different objects 
+    inventory1 = {"fries": 3, "hot dog": 2, "popcorn": 1}
+    inventory2 = {"nachos": 8, "pop": 10, "water": 6}
 
+    Andrew = Customer("Andrew", 145)
+    Bella = Customer("Bella", 98)
+    Will = Customer("Will", 55)
+
+    Stand1 = Stall("Stand1",inventory1,15)
+    Stand2 = Stall("Stand2",inventory2, 8)
+
+    DJ = Cashier("DJ", [Stand1,Stand2])
+    Max = Cashier("Max",[Stand1,Stand2])
     #Try all cases in the validate_order function
+
     #Below you need to have *each customer instance* try the four cases
     #case 1: the cashier does not have the stall 
     
